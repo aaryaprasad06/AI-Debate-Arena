@@ -1,101 +1,128 @@
-# AI Debate Arena ⚖️
+# ⚖️ AI Debate Arena
 
-An elite multi-agent debate platform built in Python. The system simulates structured debates between opposing AI agents and utilizes a balanced AI Referee (Judge) to grade arguments and declare a winner, all streaming live through a premium glassmorphic web interface.
-
----
-
-## 🏛️ Technology Stack
-
-* **Frontend:** [Gradio](https://www.gradio.app/) with customized modern dark glassmorphic layout and live-streaming progress steps.
-* **Backend Core:** Python 3.11+ modular services.
-* **AI Orchestrator:** **Gemini 2.5 Flash** (leveraging the official `google-genai` SDK) running distinct system persona instructions (Pro Agent, Against Agent, Judge Agent).
-* **Database:** **Firebase Firestore** to log debate histories, transcripts, scores, and winner standings. (Falls back automatically to a local JSON file if credentials are omitted, for instant zero-friction developer setups!)
-* **Cloud Infrastructure:** **Google Cloud Run** for containerized serverless hosting.
+An advanced multi-agent debate platform built with Python that enables intelligent, structured debates between opposing AI participants. A neutral AI Judge evaluates each side's arguments, assigns scores, and determines the winner. The entire debate unfolds in real time through a sleek, glassmorphic web interface with live progress updates.
 
 ---
 
-## 🏗️ Folder Structure
+## 🛠️ Core Technologies
+
+### Frontend
+
+* **Gradio** framework with a modern dark-themed glassmorphic design.
+* Real-time debate streaming and interactive progress visualization.
+
+### Backend
+
+* Python 3.11+ with a modular service-oriented architecture.
+
+### AI Engine
+
+* Powered by **Gemini 2.5 Flash** using the official `google-genai` SDK.
+* Separate AI personas:
+
+  * **Supporting Agent**
+  * **Opposing Agent**
+  * **Judge Agent**
+
+### Data Storage
+
+* **Firebase Firestore** for storing debate transcripts, scores, winners, and historical records.
+* Automatic fallback to a local JSON database when Firebase credentials are unavailable, allowing immediate development without cloud setup.
+
+### Deployment Platform
+
+* Containerized and hosted using **Google Cloud Run** for scalable serverless execution.
+
+---
+
+## 📁 Project Structure
 
 ```text
 AI-Debate-Arena/
 ├── backend/
 │   ├── __init__.py
-│   ├── config.py           # Handles env settings & client initializations
-│   ├── database.py         # Firestore connectors with local JSON file fallback
+│   ├── config.py             # Environment variables and client setup
+│   ├── database.py           # Firestore integration with JSON fallback
 │   └── services/
 │       ├── __init__.py
-│       ├── debate_service.py # Round-robin multi-agent generator & streaming workflow
-│       └── gemini_service.py # Gemini 2.5 API wrapper with mock capabilities
-├── app.py                  # Gradio UI client entrypoint and custom design layout
-├── requirements.txt        # Python external dependencies declaration
-├── Dockerfile              # Production-optimized container build
-├── .env.template           # Template detailing necessary keys
-└── .gitignore              # Python source version controls
+│       ├── debate_service.py # Debate workflow and streaming logic
+│       └── gemini_service.py # Gemini API integration and mock support
+├── app.py                    # Main Gradio application entry point
+├── requirements.txt          # Project dependencies
+├── Dockerfile                # Container build configuration
+├── .env.template             # Environment variable template
+└── .gitignore                # Git exclusion rules
 ```
 
 ---
 
-## 🚀 Quick Start (Local Run)
+## 🚀 Running the Application Locally
 
-### 1. Set Up Virtual Environment
+### Step 1: Create a Virtual Environment
 
-Open your terminal in the project root directory:
+Navigate to the project root directory and execute:
 
 ```bash
-# Create a virtual environment
+# Create virtual environment
 python -m venv venv
 
-# Activate virtual environment
-# On Windows:
+# Activate environment
+
+# Windows
 venv\Scripts\activate
-# On macOS/Linux:
+
+# macOS/Linux
 source venv/bin/activate
 ```
 
-### 2. Install Dependencies
+### Step 2: Install Required Packages
 
 ```bash
 pip install -r requirements.txt
 ```
 
-### 3. Configure Credentials
+### Step 3: Configure Environment Variables
 
-Create a `.env` file in the root folder and copy variables from `.env.template`:
+Create a `.env` file and populate it using the values from `.env.template`:
 
 ```env
 PORT=8080
-GEMINI_API_KEY=your_actual_gemini_api_key
+GEMINI_API_KEY=your_gemini_api_key
 
-# Optional (If using Firebase Firestore locally):
-GOOGLE_APPLICATION_CREDENTIALS=path_to_your_firebase_key.json
-FIREBASE_PROJECT_ID=your_firebase_project_id
+# Optional Firestore Configuration
+GOOGLE_APPLICATION_CREDENTIALS=path/to/firebase-key.json
+FIREBASE_PROJECT_ID=your_project_id
 ```
 
-> [!NOTE]
-> If `GEMINI_API_KEY` is not supplied, the application will boot in **Mock Demonstration Mode** featuring structured static answers, allowing you to test the UI layout without charges.
-> If `GOOGLE_APPLICATION_CREDENTIALS` is omitted, the app will log to a local file called `debate_history.json` and read history from there seamlessly.
+### Development Notes
 
-### 4. Boot the Server
+* If no **GEMINI_API_KEY** is provided, the application launches in **Mock Demo Mode**, generating predefined responses for testing and UI validation.
+* If Firebase credentials are not configured, all debate data is automatically stored in a local file named `debate_history.json`.
+
+### Step 4: Launch the Application
 
 ```bash
 python app.py
 ```
 
-Open `http://localhost:8080/` in your browser to experience the Arena!
+Once started, open the following URL in your browser:
+
+```text
+http://localhost:8080/
+```
 
 ---
 
-## ☁️ Deploying to Google Cloud Run
+## ☁️ Deployment on Google Cloud Run
 
-To containerize and launch on Google Cloud Run serverless hosting:
-
-### 1. Build and Submit Container to Google Artifact Registry
+### Build and Upload the Container
 
 ```bash
-gcloud builds submit --tag gcr.io/YOUR_PROJECT_ID/ai-debate-arena
+gcloud builds submit \
+    --tag gcr.io/YOUR_PROJECT_ID/ai-debate-arena
 ```
 
-### 2. Deploy Container to Cloud Run
+### Deploy to Cloud Run
 
 ```bash
 gcloud run deploy ai-debate-arena \
@@ -106,4 +133,23 @@ gcloud run deploy ai-debate-arena \
     --set-env-vars="GEMINI_API_KEY=your_gemini_api_key"
 ```
 
-*Note: For database access on Cloud Run, ensure the Cloud Run service account has the **Cloud Datastore User** (Firestore) permission enabled in the Google Cloud Console. Cloud Run will automatically bind to the default credentials without requiring local service key JSON configurations!*
+### Firestore Access Configuration
+
+For production deployments using Firestore, ensure that the Cloud Run service account has the **Cloud Datastore User** role assigned within Google Cloud IAM.
+
+When deployed on Cloud Run, the application automatically uses the platform's default service account credentials, eliminating the need to upload or manage Firebase key files manually.
+
+---
+
+## ✨ Key Features
+
+* Live AI-versus-AI debates
+* Independent Pro and Con agents
+* Neutral AI judging and scoring system
+* Real-time streaming updates
+* Modern glassmorphic user interface
+* Firebase Firestore integration
+* Automatic local storage fallback
+* Mock mode for cost-free testing
+* Container-ready deployment
+* Serverless scaling with Google Cloud Run
